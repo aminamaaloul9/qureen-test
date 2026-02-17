@@ -207,7 +207,7 @@
         let reviewList = JSON.parse(localStorage.getItem('hifz_reviews')) || [];
         let dailyCount = parseInt(localStorage.getItem('hifz_daily')) || 0;
 
-        fetch('quran_fixed.json').then(r => r.json()).then(data => {
+        fetch('fullquran_fixed.json').then(r => r.json()).then(data => {
             quran = data;
             init();
         });
@@ -307,4 +307,5 @@
     </script>
 </body>
 </html>
+
 
