@@ -66,8 +66,9 @@
 
         .pill-btn {
             background: var(--primary-gold); color: black; border: none;
-            padding: 14px 28px; border-radius: 50px; font-weight: bold; cursor: pointer;
+            padding: 12px 24px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
+        .pill-btn:hover { transform: scale(1.02); }
 
         .view-section { display: none; }
         .view-section.active { display: block; }
@@ -88,6 +89,12 @@
 
         .blurred { filter: blur(12px); cursor: pointer; transition: 0.3s; }
         .blurred:active { filter: blur(0); }
+
+        /* Reset Button Style */
+        .reset-link {
+            background: none; border: none; color: var(--primary-gold); 
+            cursor: pointer; text-decoration: underline; font-size: 0.85em; padding: 0 5px;
+        }
     </style>
 </head>
 <body>
@@ -95,7 +102,7 @@
     <aside class="sidebar">
         <div class="sidebar-logo">مُسْلِم 🌙</div>
         <div class="sidebar-nav-item active" onclick="switchTab('home', this)">🏠 الرئيسية</div>
-        <div class="sidebar-nav-item" onclick="switchTab('test', this)">🎯 اختبار</div>
+        <div class="sidebar-nav-item" onclick="switchTab('test', this)">🎯 اختبار الحفظ</div>
         <div class="sidebar-nav-item" onclick="switchTab('read', this)">📖 المصحف</div>
     </aside>
 
@@ -103,44 +110,54 @@
         <section id="view-home" class="view-section active">
             <h1>أهلاً وسهلاً</h1>
             <div class="stats-grid">
-                <div class="stat-box"><span class="stat-val" id="stat-daily">0</span>آيات اليوم</div>
-                <div class="stat-box"><span class="stat-val" id="stat-review" style="color:var(--danger)">0</span>للمراجعة</div>
+                <div class="stat-box"><span class="stat-val" id="stat-daily">0</span>آيات تم إتقانها</div>
+                <div class="stat-box"><span class="stat-val" id="stat-review" style="color:var(--danger)">0</span>آيات للمراجعة</div>
             </div>
-            <div class="info-card" style="margin-top:20px; background:var(--primary-gold); color:black;">
-                <h3>ابدأ وردك اليومي 🚀</h3>
-                <button class="pill-btn" style="background:black; color:white" onclick="switchTab('test')">ابدأ الآن</button>
+            <div class="info-card" style="margin-top:20px; background:linear-gradient(45deg, #FFD700, #B8860B); color:black;">
+                <h3 style="margin-top:0;">جاهز للبدء؟ 🚀</h3>
+                <p>تحدى نفسك في السور التي قمت بحفظها اليوم.</p>
+                <button class="pill-btn" style="background:black; color:white" onclick="switchTab('test')">ابدأ الاختبار الآن</button>
             </div>
         </section>
 
         <section id="view-test" class="view-section">
-            <h2>🎯 اختبار الحفظ</h2>
+            <h2 style="color:var(--primary-gold)">🎯 مركز الاختبار</h2>
             <div class="info-card">
-                <div style="display:flex; justify-content:space-between">
-                    <strong>اختر السور المشمولة:</strong>
-                    <button onclick="toggleSurahs(true)" style="background:none; border:none; color:var(--primary-gold); cursor:pointer;">الكل</button>
+                <div style="display:flex; justify-content:space-between; align-items: center;">
+                    <strong>اختيار السور:</strong>
+                    <div>
+                        <button onclick="toggleSurahs(true)" class="reset-link">تحديد الكل</button>
+                        <span style="color:var(--text-dim)">|</span>
+                        <button onclick="toggleSurahs(false)" class="reset-link">إلغاء الكل</button>
+                    </div>
                 </div>
                 <div class="surah-grid" id="surahList"></div>
             </div>
+            
             <div class="test-display" id="testArea">
-                <div id="cardContent">اختر السور واضغط اختبار جديد</div>
+                <div id="cardContent">
+                    <p style="opacity:0.5;">يرجى اختيار السور أعلاه للبدء</p>
+                </div>
             </div>
+
             <div style="margin-top:20px; text-align:center;" id="testActions">
                 <button class="pill-btn" onclick="generateTest()">✨ اختبار جديد</button>
-                <button class="pill-btn" style="background:transparent; border:1px solid var(--primary-gold); color:var(--primary-gold)" onclick="reveal()">👁 كشف</button>
+                <button class="pill-btn" style="background:transparent; border:1px solid var(--primary-gold); color:var(--primary-gold); margin-right:10px;" onclick="reveal()">👁 كشف الآية</button>
             </div>
+
             <div id="revealControls" style="display:none; margin-top:20px;">
-                <div id="fullReveal" class="blurred" style="font-size:1.8em; margin-bottom:20px;"></div>
-                <div style="display:flex; gap:10px;">
-                    <button class="pill-btn" style="background:var(--accent-green); flex:1" onclick="handleScore(true)">✅ أتقنت</button>
-                    <button class="pill-btn" style="background:var(--danger); color:white; flex:1" onclick="handleScore(false)">❌ مراجعة</button>
+                <div id="fullReveal" class="blurred" style="font-size:1.6em; line-height:1.8; margin-bottom:20px; padding:15px; border-radius:15px; background:rgba(255,255,255,0.03);"></div>
+                <div style="display:flex; gap:15px;">
+                    <button class="pill-btn" style="background:var(--accent-green); flex:1" onclick="handleScore(true)">✅ تم الحفظ</button>
+                    <button class="pill-btn" style="background:var(--danger); color:white; flex:1" onclick="handleScore(false)">❌ مراجعة لاحقاً</button>
                 </div>
             </div>
         </section>
 
         <section id="view-read" class="view-section">
-            <h2>📖 المصحف</h2>
-            <select id="jumpMenu" onchange="jumpToSurah()" style="width:100%; padding:15px; background:var(--surface); color:var(--primary-gold); border-radius:15px; border:1px solid var(--primary-gold); margin-bottom:20px;">
-                <option value="">🚀 انتقل إلى سورة...</option>
+            <h2 style="color:var(--primary-gold)">📖 مراجعة المصحف</h2>
+            <select id="jumpMenu" onchange="jumpToSurah()" style="width:100%; padding:15px; background:var(--surface); color:var(--primary-gold); border-radius:15px; border:1px solid var(--primary-gold); margin-bottom:20px; font-weight:bold;">
+                <option value="">🚀 اختر سورة للقفز إليها...</option>
             </select>
             <div id="mushaf-content"></div>
         </section>
@@ -158,75 +175,71 @@
         let reviewList = JSON.parse(localStorage.getItem('hifz_reviews')) || [];
         let dailyCount = parseInt(localStorage.getItem('hifz_daily')) || 0;
 
-        // CRITICAL FIX: Ensure initialization happens AFTER data is fetched
         fetch('fullquran_fixed.json')
             .then(response => response.json())
             .then(data => {
                 quran = data;
-                console.log("Quran data loaded, count:", quran.length);
                 initApp();
             })
             .catch(err => {
-                console.error("Error loading JSON:", err);
-                document.getElementById('cardContent').innerText = "خطأ في تحميل الملف. تأكد من وجود fullquran_fixed.json";
+                console.error("File Error:", err);
+                document.getElementById('cardContent').innerHTML = "<span style='color:red'>خطأ في تحميل fullquran_fixed.json</span>";
             });
 
         function initApp() {
             updateStats();
-            
-            // 1. Get unique surah names
             const names = [...new Set(quran.map(x => x.surah))];
             
-            // 2. Populate Surah Checkboxes
-            const listEl = document.getElementById('surahList');
-            if(listEl) {
-                listEl.innerHTML = names.map(n => `
-                    <label style="display:flex; align-items:center; gap:5px; font-size:0.85em;">
-                        <input type="checkbox" checked value="${n}"> ${n}
-                    </label>
-                `).join('');
-            }
+            // Populate checkboxes
+            document.getElementById('surahList').innerHTML = names.map(n => `
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.9em; padding:4px;">
+                    <input type="checkbox" checked value="${n}"> ${n}
+                </label>
+            `).join('');
 
-            // 3. Populate Jump Menu
+            // Populate select menu
             const jumpEl = document.getElementById('jumpMenu');
-            if(jumpEl) {
-                names.forEach(n => {
-                    let opt = document.createElement('option');
-                    opt.value = n; opt.textContent = n;
-                    jumpEl.appendChild(opt);
-                });
-            }
+            names.forEach(n => {
+                let opt = document.createElement('option');
+                opt.value = n; opt.textContent = n;
+                jumpEl.appendChild(opt);
+            });
 
-            // 4. Build Mushaf
-            const mushafEl = document.getElementById('mushaf-content');
-            if(mushafEl) {
-                mushafEl.innerHTML = quran.map(a => `
-                    <div class="info-card" id="anchor-${a.surah}">
-                        <div style="color:var(--primary-gold); font-size:0.8em;">${a.surah} • ${a.ayah_num}</div>
-                        <div style="font-size:1.4em; line-height:1.8;">${a.full}</div>
-                    </div>
-                `).join('');
-            }
+            // Populate Mushaf
+            document.getElementById('mushaf-content').innerHTML = quran.map(a => `
+                <div class="info-card" id="anchor-${a.surah}">
+                    <div style="color:var(--primary-gold); font-size:0.8em; margin-bottom:8px;">${a.surah} • ${a.ayah_num}</div>
+                    <div style="font-size:1.4em; line-height:2;">${a.full}</div>
+                </div>
+            `).join('');
+        }
+
+        function toggleSurahs(val) {
+            const boxes = document.querySelectorAll('#surahList input[type="checkbox"]');
+            boxes.forEach(b => b.checked = val);
         }
 
         function switchTab(target, el) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + target).classList.add('active');
+            
             document.querySelectorAll('.sidebar-nav-item').forEach(i => i.classList.remove('active'));
             if(el) el.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function generateTest() {
             const selected = Array.from(document.querySelectorAll('#surahList input:checked')).map(i => i.value);
-            if(!selected.length) return alert("اختر سورة");
+            if(!selected.length) return alert("الرجاء اختيار سورة واحدة على الأقل من القائمة");
 
             const pool = quran.map((v, i) => selected.includes(v.surah) ? i : -1).filter(i => i !== -1);
             currentIdx = pool[Math.floor(Math.random() * pool.length)];
             const ayah = quran[currentIdx];
 
             document.getElementById('cardContent').innerHTML = `
-                <div style="color:var(--primary-gold); font-weight:bold;">${ayah.surah} • آية ${ayah.ayah_num}</div>
-                <div style="font-size:1.8em; margin-top:20px;">${ayah.start} ...</div>
+                <div style="color:var(--primary-gold); font-weight:bold; font-size:1.1em;">${ayah.surah} • آية ${ayah.ayah_num}</div>
+                <div style="font-size:2em; margin-top:20px; color:white;">${ayah.start} ...</div>
             `;
             document.getElementById('revealControls').style.display = 'none';
             document.getElementById('testActions').style.display = 'block';
@@ -262,15 +275,12 @@
         function jumpToSurah() {
             const s = document.getElementById('jumpMenu').value;
             const target = document.getElementById(`anchor-${s}`);
-            if(target) target.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function toggleSurahs(val) {
-            document.querySelectorAll('#surahList input').forEach(i => i.checked = val);
+            if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     </script>
 </body>
 </html>
+
 
 
 
