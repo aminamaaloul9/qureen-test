@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Qur'an Hifz Premium: Universal</title>
+    <title>Qur'an Hifz Premium: Audio Edition</title>
     <style>
         :root {
             --primary-gold: #FFD700;
@@ -23,7 +23,7 @@
             display: flex; flex-direction: row; min-height: 100vh;
         }
 
-        /* SIDEBAR (Desktop) */
+        /* SIDEBAR */
         .sidebar {
             width: var(--sidebar-width); background: var(--surface);
             border-left: 1px solid rgba(255,255,255,0.05);
@@ -67,13 +67,20 @@
         .pill-btn {
             background: var(--primary-gold); color: black; border: none;
             padding: 12px 24px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .pill-btn:hover { transform: scale(1.02); }
+        .pill-btn:active { transform: scale(0.95); }
+
+        .context-area { margin-top: 20px; display: grid; gap: 15px; }
+        .context-card {
+            background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px;
+            text-align: right; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .context-label { color: var(--primary-gold); font-size: 0.8em; font-weight: bold; display: block; margin-bottom: 5px; }
 
         .view-section { display: none; }
         .view-section.active { display: block; }
 
-        /* Bottom Nav (Mobile Only) */
         .bottom-nav { display: none; }
 
         @media (max-width: 850px) {
@@ -89,12 +96,7 @@
 
         .blurred { filter: blur(12px); cursor: pointer; transition: 0.3s; }
         .blurred:active { filter: blur(0); }
-
-        /* Reset Button Style */
-        .reset-link {
-            background: none; border: none; color: var(--primary-gold); 
-            cursor: pointer; text-decoration: underline; font-size: 0.85em; padding: 0 5px;
-        }
+        .reset-link { background: none; border: none; color: var(--primary-gold); cursor: pointer; text-decoration: underline; font-size: 0.85em; padding: 0 5px; }
     </style>
 </head>
 <body>
@@ -114,8 +116,7 @@
                 <div class="stat-box"><span class="stat-val" id="stat-review" style="color:var(--danger)">0</span>آيات للمراجعة</div>
             </div>
             <div class="info-card" style="margin-top:20px; background:linear-gradient(45deg, #FFD700, #B8860B); color:black;">
-                <h3 style="margin-top:0;">جاهز للبدء؟ 🚀</h3>
-                <p>تحدى نفسك في السور التي قمت بحفظها اليوم.</p>
+                <h3 style="margin-top:0;">ابدأ رحلة التثبيت 🚀</h3>
                 <button class="pill-btn" style="background:black; color:white" onclick="switchTab('test')">ابدأ الاختبار الآن</button>
             </div>
         </section>
@@ -138,19 +139,28 @@
                 <div id="cardContent">
                     <p style="opacity:0.5;">يرجى اختيار السور أعلاه للبدء</p>
                 </div>
+                <div id="revealControls" style="display:none; margin-top:20px;">
+                    <div id="fullReveal" class="blurred" style="font-size:1.6em; line-height:1.8; margin-bottom:20px; padding:15px; border-radius:15px; background:rgba(255,255,255,0.03);"></div>
+                    
+                    <button id="audioBtn" class="pill-btn" style="background:rgba(255,215,0,0.1); color:var(--primary-gold); border:1px solid var(--primary-gold); margin-bottom: 20px;" onclick="playAudio()">
+                        🔊 تلاوة الآية
+                    </button>
+
+                    <div class="context-area">
+                        <div id="prevAyahBox" class="context-card"></div>
+                        <div id="nextAyahBox" class="context-card"></div>
+                    </div>
+
+                    <div style="display:flex; gap:15px; margin-top:25px;">
+                        <button class="pill-btn" style="background:var(--accent-green); flex:1" onclick="handleScore(true)">✅ أتقنت</button>
+                        <button class="pill-btn" style="background:var(--danger); color:white; flex:1" onclick="handleScore(false)">❌ مراجعة</button>
+                    </div>
+                </div>
             </div>
 
             <div style="margin-top:20px; text-align:center;" id="testActions">
                 <button class="pill-btn" onclick="generateTest()">✨ اختبار جديد</button>
                 <button class="pill-btn" style="background:transparent; border:1px solid var(--primary-gold); color:var(--primary-gold); margin-right:10px;" onclick="reveal()">👁 كشف الآية</button>
-            </div>
-
-            <div id="revealControls" style="display:none; margin-top:20px;">
-                <div id="fullReveal" class="blurred" style="font-size:1.6em; line-height:1.8; margin-bottom:20px; padding:15px; border-radius:15px; background:rgba(255,255,255,0.03);"></div>
-                <div style="display:flex; gap:15px;">
-                    <button class="pill-btn" style="background:var(--accent-green); flex:1" onclick="handleScore(true)">✅ تم الحفظ</button>
-                    <button class="pill-btn" style="background:var(--danger); color:white; flex:1" onclick="handleScore(false)">❌ مراجعة لاحقاً</button>
-                </div>
             </div>
         </section>
 
@@ -174,6 +184,7 @@
         let currentIdx = -1;
         let reviewList = JSON.parse(localStorage.getItem('hifz_reviews')) || [];
         let dailyCount = parseInt(localStorage.getItem('hifz_daily')) || 0;
+        let currentAudio = null;
 
         fetch('fullquran_fixed.json')
             .then(response => response.json())
@@ -183,29 +194,24 @@
             })
             .catch(err => {
                 console.error("File Error:", err);
-                document.getElementById('cardContent').innerHTML = "<span style='color:red'>خطأ في تحميل fullquran_fixed.json</span>";
+                document.getElementById('cardContent').innerHTML = "خطأ في تحميل fullquran_fixed.json";
             });
 
         function initApp() {
             updateStats();
             const names = [...new Set(quran.map(x => x.surah))];
-            
-            // Populate checkboxes
             document.getElementById('surahList').innerHTML = names.map(n => `
                 <label style="display:flex; align-items:center; gap:8px; font-size:0.9em; padding:4px;">
                     <input type="checkbox" checked value="${n}"> ${n}
                 </label>
             `).join('');
 
-            // Populate select menu
             const jumpEl = document.getElementById('jumpMenu');
             names.forEach(n => {
-                let opt = document.createElement('option');
-                opt.value = n; opt.textContent = n;
+                let opt = document.createElement('option'); opt.value = n; opt.textContent = n;
                 jumpEl.appendChild(opt);
             });
 
-            // Populate Mushaf
             document.getElementById('mushaf-content').innerHTML = quran.map(a => `
                 <div class="info-card" id="anchor-${a.surah}">
                     <div style="color:var(--primary-gold); font-size:0.8em; margin-bottom:8px;">${a.surah} • ${a.ayah_num}</div>
@@ -215,30 +221,27 @@
         }
 
         function toggleSurahs(val) {
-            const boxes = document.querySelectorAll('#surahList input[type="checkbox"]');
-            boxes.forEach(b => b.checked = val);
+            document.querySelectorAll('#surahList input').forEach(b => b.checked = val);
         }
 
         function switchTab(target, el) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + target).classList.add('active');
-            
             document.querySelectorAll('.sidebar-nav-item').forEach(i => i.classList.remove('active'));
             if(el) el.classList.add('active');
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function generateTest() {
+            stopAudio();
             const selected = Array.from(document.querySelectorAll('#surahList input:checked')).map(i => i.value);
-            if(!selected.length) return alert("الرجاء اختيار سورة واحدة على الأقل من القائمة");
+            if(!selected.length) return alert("الرجاء اختيار سورة واحدة");
 
             const pool = quran.map((v, i) => selected.includes(v.surah) ? i : -1).filter(i => i !== -1);
             currentIdx = pool[Math.floor(Math.random() * pool.length)];
             const ayah = quran[currentIdx];
 
             document.getElementById('cardContent').innerHTML = `
-                <div style="color:var(--primary-gold); font-weight:bold; font-size:1.1em;">${ayah.surah} • آية ${ayah.ayah_num}</div>
+                <div style="color:var(--primary-gold); font-weight:bold;">${ayah.surah} • آية ${ayah.ayah_num}</div>
                 <div style="font-size:2em; margin-top:20px; color:white;">${ayah.start} ...</div>
             `;
             document.getElementById('revealControls').style.display = 'none';
@@ -247,14 +250,45 @@
 
         function reveal() {
             if(currentIdx === -1) return;
+            
             const rev = document.getElementById('fullReveal');
             rev.textContent = quran[currentIdx].full;
             rev.classList.add('blurred');
+            
+            const prev = quran[currentIdx - 1];
+            const next = quran[currentIdx + 1];
+            
+            document.getElementById('prevAyahBox').innerHTML = prev ? `<span class="context-label">الآية السابقة:</span>${prev.full}` : "";
+            document.getElementById('nextAyahBox').innerHTML = next ? `<span class="context-label">الآية التالية:</span>${next.full}` : "";
+            
             document.getElementById('revealControls').style.display = 'block';
             document.getElementById('testActions').style.display = 'none';
         }
 
+        function playAudio() {
+            stopAudio();
+            // global ayah index starts at 1
+            const audioUrl = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${currentIdx + 1}.mp3`;
+            currentAudio = new Audio(audioUrl);
+            
+            const btn = document.getElementById('audioBtn');
+            btn.innerText = "⏳ جاري التحميل...";
+            
+            currentAudio.play();
+            currentAudio.onplaying = () => { btn.innerText = "⏸ إيقاف التلاوة"; };
+            currentAudio.onended = () => { btn.innerText = "🔊 تلاوة الآية"; };
+        }
+
+        function stopAudio() {
+            if(currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                document.getElementById('audioBtn').innerText = "🔊 تلاوة الآية";
+            }
+        }
+
         function handleScore(success) {
+            stopAudio();
             if(!success) {
                 if(!reviewList.includes(currentIdx)) reviewList.push(currentIdx);
             } else {
@@ -275,13 +309,9 @@
         function jumpToSurah() {
             const s = document.getElementById('jumpMenu').value;
             const target = document.getElementById(`anchor-${s}`);
-            if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if(target) target.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
 </html>
-
-
-
-
 
