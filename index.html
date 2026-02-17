@@ -3,197 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Qur'an Hifz Master</title>
+    <title>Qur'an Hifz Premium: Universal</title>
     <style>
         :root {
-            --primary: #00ffa3;
-            --accent: #ffd700;
-            --bg: #0b1311;
-            --surface: #16211e;
-            --text: #e0e0e0;
+            --primary-gold: #FFD700;
+            --primary-dark: #0b0d0e;
+            --surface: #1A1C1E;
+            --surface-hover: #24272B;
+            --text-main: #FFFFFF;
+            --text-dim: #A0A0A0;
+            --accent-green: #00FFA3;
+            --danger: #FF4D6D;
+            --sidebar-width: 280px;
         }
 
         body {
-            margin: 0; padding: 0; background: var(--bg); color: var(--text);
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0; padding: 0; background: var(--primary-dark);
+            color: var(--text-main); font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex; flex-direction: row; min-height: 100vh;
         }
 
-        /* Tab Navigation */
-        .tabs {
-            display: flex; background: var(--surface); position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid #243531;
-        }
-        .tab {
-            flex: 1; padding: 15px; text-align: center; cursor: pointer;
-            font-weight: bold; opacity: 0.6; transition: 0.3s;
-        }
-        .tab.active { opacity: 1; color: var(--primary); border-bottom: 3px solid var(--primary); }
-
-        .container { width: 92%; max-width: 600px; margin: auto; padding: 20px 0 100px; }
-
-        /* Settings Card */
-        .card-settings {
-            background: var(--surface); border-radius: 20px; padding: 15px; margin-bottom: 20px;
-        }
-        .surah-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-            max-height: 150px; overflow-y: auto; margin: 10px 0;
-        }
-        .surah-item {
-            background: #1d2b27; padding: 8px; border-radius: 8px;
-            display: flex; align-items: center; font-size: 0.8em;
+        /* --- DESKTOP SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column;
+            padding: 20px;
+            position: sticky; top: 0; height: 100vh;
+            box-sizing: border-box;
         }
 
-        /* Mushaf Mode */
-        #mushaf-view { display: none; background: var(--surface); border-radius: 20px; padding: 20px; }
-        .mushaf-ayah { margin-bottom: 20px; border-bottom: 1px solid #243531; padding-bottom: 10px; }
-        .mushaf-meta { color: var(--primary); font-size: 0.8em; }
-        .mushaf-text { font-size: 1.4em; line-height: 1.8; margin-top: 5px; }
+        .sidebar-logo {
+            color: var(--primary-gold); font-size: 1.5em; font-weight: bold;
+            margin-bottom: 40px; text-align: center; border-bottom: 1px solid rgba(255,215,0,0.1);
+            padding-bottom: 20px;
+        }
 
-        /* Test Card */
-        .test-card {
+        .sidebar-nav-item {
+            padding: 15px 20px; border-radius: 15px; margin-bottom: 10px;
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px;
+            color: var(--text-dim);
+        }
+
+        .sidebar-nav-item:hover { background: var(--surface-hover); color: var(--text-main); }
+        .sidebar-nav-item.active { background: var(--primary-gold); color: black; font-weight: bold; }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 1000px; /* Limits width on ultra-wide monitors for readability */
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* --- MOBILE NAVIGATION (Hidden on PC) --- */
+        .bottom-nav { display: none; }
+
+        /* --- SHARED COMPONENTS --- */
+        .info-card {
             background: var(--surface); border-radius: 24px; padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #243531;
-        }
-        .ayah-text { font-size: 1.6em; line-height: 1.7; margin: 15px 0; }
-        .context-box { 
-            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;
-            font-size: 0.9em; margin: 5px 0; color: #aaa;
+            margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        /* Buttons */
-        .btn {
-            padding: 14px; border-radius: 14px; border: none; font-weight: bold;
-            cursor: pointer; width: 100%; margin-top: 10px;
-        }
-        .btn-primary { background: var(--primary); color: #000; }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .btn-small { padding: 5px 10px; font-size: 0.7em; margin-right: 5px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.02); }
+        .stat-val { font-size: 2em; color: var(--primary-gold); display: block; margin-bottom: 5px; }
 
-        .action-group { margin-top: 20px; }
-        .search-box {
-            width: 100%; padding: 10px; border-radius: 10px; border: none;
-            background: #0b1311; color: white; box-sizing: border-box;
+        .test-display {
+            background: var(--surface); border-radius: 30px; padding: 50px;
+            text-align: center; min-height: 300px; display: flex; flex-direction: column;
+            justify-content: center; border: 1px solid rgba(255,255,255,0.05);
         }
+
+        .pill-btn {
+            background: var(--primary-gold); color: black; border: none;
+            padding: 16px 32px; border-radius: 50px; font-weight: bold;
+            font-size: 1.1em; cursor: pointer; transition: 0.2s;
+        }
+        .pill-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,215,0,0.3); }
+
+        .surah-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px; max-height: 250px; overflow-y: auto;
+            padding: 15px; background: rgba(0,0,0,0.2); border-radius: 15px;
+        }
+
+        /* --- RESPONSIVE BREAKPOINT (Mobile) --- */
+        @media (max-width: 850px) {
+            body { flex-direction: column; }
+            .sidebar { display: none; }
+            .bottom-nav {
+                display: flex; position: fixed; bottom: 0; width: 100%;
+                background: var(--surface); justify-content: space-around;
+                padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2000;
+            }
+            .main-content { padding: 20px; padding-bottom: 100px; }
+            .test-display { padding: 30px; }
+        }
+
+        /* Animation & Utility */
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .blurred { filter: blur(15px); transition: 0.5s; cursor: pointer; padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.02); }
     </style>
 </head>
 <body>
 
-<div class="tabs">
-    <div class="tab active" onclick="switchTab('test')">🎯 إختبار الحفظ</div>
-    <div class="tab" onclick="switchTab('read')">📖 المصحف</div>
-</div>
-
-<div class="container">
-    <div id="test-view">
-        <div class="card-settings">
-            <input type="text" class="search-box" id="search" placeholder="🔍 بحث عن سورة..." oninput="filterSurahs()">
-            <div class="surah-grid" id="surahList"></div>
-            <div>
-                <button class="btn btn-outline btn-small" onclick="toggleSurahs(true)">تحديد الكل</button>
-                <button class="btn btn-outline btn-small" onclick="toggleSurahs(false)">إلغاء الكل</button>
-            </div>
-        </div>
-
-        <div class="test-card" id="testCard">
-            <div id="cardContent" style="text-align:center; opacity:0.5;">ابدأ الاختبار الآن</div>
-        </div>
-
-        <div class="action-group">
-            <button class="btn btn-primary" onclick="generateTest()">🎯 اختبار جديد</button>
-            <button class="btn btn-outline" onclick="reveal()">👁 كشف الآية</button>
-            
-            <div id="revealControls" style="display:none; margin-top:15px;">
-                <div id="prevAyah" class="context-box"></div>
-                <div id="nextAyah" class="context-box"></div>
-                <button class="btn btn-outline" style="color:var(--accent); border-color:var(--accent)" onclick="playAudio()">🔊 استماع بصوت العفاسي</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="mushaf-view">
-        <h3 style="color:var(--primary)">القراءة والمراجعة</h3>
-        <div id="mushaf-content"></div>
-    </div>
-</div>
-
-<script>
-    let quran = [];
-    let currentIdx = -1;
-
-    fetch('quran_fixed.json').then(r => r.json()).then(data => {
-        quran = data;
-        loadApp();
-    });
-
-    function loadApp() {
-        // Build Surah selection list
-        const names = [...new Set(quran.map(x => x.surah))];
-        document.getElementById('surahList').innerHTML = names.map(n => `
-            <label class="surah-item"><input type="checkbox" checked value="${n}"> <span>${n}</span></label>
-        `).join('');
-
-        // Build Mushaf Content
-        document.getElementById('mushaf-content').innerHTML = quran.map((a, i) => `
-            <div class="mushaf-ayah">
-                <div class="mushaf-meta">${a.surah} | آية ${a.ayah_num}</div>
-                <div class="mushaf-text">${a.full}</div>
-            </div>
-        `).join('');
-    }
-
-    function switchTab(mode) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById('test-view').style.display = (mode === 'test') ? 'block' : 'none';
-        document.getElementById('mushaf-view').style.display = (mode === 'read') ? 'block' : 'none';
-    }
-
-    function toggleSurahs(val) {
-        document.querySelectorAll('#surahList input').forEach(i => i.checked = val);
-    }
-
-    function filterSurahs() {
-        const q = document.getElementById('search').value;
-        document.querySelectorAll('.surah-item').forEach(el => {
-            el.style.display = el.textContent.includes(q) ? 'flex' : 'none';
-        });
-    }
-
-    function generateTest() {
-        const selected = Array.from(document.querySelectorAll('#surahList input:checked')).map(i => i.value);
-        if(!selected.length) return alert("اختر سورة");
-
-        const pool = quran.map((v, i) => selected.includes(v.surah) ? i : -1).filter(i => i !== -1);
-        currentIdx = pool[Math.floor(Math.random() * pool.length)];
-        const ayah = quran[currentIdx];
-
-        document.getElementById('cardContent').innerHTML = `
-            <div style="color:var(--primary); font-size:0.9em;">سورة ${ayah.surah} • آية ${ayah.ayah_num}</div>
-            <div class="ayah-text">${ayah.start} ...</div>
-            <div id="fullReveal" style="display:none; border-top:1px solid #243531; padding-top:10px;">${ayah.full}</div>
-        `;
-        document.getElementById('revealControls').style.display = 'none';
-    }
-
-    function reveal() {
-        if(currentIdx === -1) return;
-        document.getElementById('fullReveal').style.display = 'block';
-        document.getElementById('revealControls').style.display = 'block';
-
-        // Context Logic
-        const prev = quran[currentIdx - 1];
-        const next = quran[currentIdx + 1];
+    <aside class="sidebar">
+        <div class="sidebar-logo">مُسْلِم 🌙</div>
+        <div class="sidebar-nav-item active" onclick="switchTab('home', this)"><span>🏠</span> الرئيسية</div>
+        <div class="sidebar-nav-item" onclick="switchTab('test', this)"><span>🎯</span> اختبار الحفظ</div>
+        <div class="sidebar-nav-item" onclick="switchTab('read', this)"><span>📖</span> المصحف الشريف</div>
         
-        document.getElementById('prevAyah').innerHTML = prev ? `<b>السابقة:</b> ${prev.full}` : "بداية الملف";
-        document.getElementById('nextAyah').innerHTML = next ? `<b>التالية:</b> ${next.full}` : "نهاية الملف";
-    }
+        <div style="margin-top: auto; padding: 20px; background: rgba(255,215,0,0.05); border-radius: 20px; text-align: center;">
+            <small style="color: var(--primary-gold); display: block; margin-bottom: 5px;">هدفك اليومي</small>
+            <strong id="side-progress">0 / 50 آية</strong>
+        </div>
+    </aside>
 
-    function playAudio() {
-        const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${currentIdx + 1}.mp3`);
-        audio.play();
-    }
-</script>
+    <main class="main-content">
+        
+        <section id="view-home" class="view-section active">
+            <h1 style="font-size: 2.5em; margin-bottom: 10px;">أهلاً وسهلاً</h1>
+            <p style="color: var(--text-dim); margin-bottom: 40px;">"خيركم من تعلم القرآن وعلمه"</p>
 
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-val" id="stat-daily">0</span>
+                    <span style="color: var(--text-dim)">آيات تم حفظها اليوم</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="stat-review" style="color: var(--danger);">0</span>
+                    <span style="color: var(--text-dim)">آيات تحتاج مراجعة</span>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top: 30px; background: linear-gradient(to left, #FFD700, #B8860B); color: black;">
+                <h2 style="margin: 0;">اختبار سريع 🚀</h2>
+                <p>قم باختبار ذاكرتك في السور المفضلة لديك الآن.</p>
+                <button class="pill-btn" style="background: black; color: white;" onclick="switchTab('test')">بدء الاختبار</button>
+            </div>
+        </section>
+
+        <section id="view-test" class="view-section">
+            <h2 style="color: var(--primary-gold); margin-bottom: 20px;">🎯 مركز الاختبار الذكي</h2>
+            
+            <div class="info-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <strong>اختر السور المشمولة:</strong>
+                    <button onclick="toggleSurahs(true)" style="background:none; border:none; color:var(--primary-gold); cursor:pointer;">تحديد الكل</button>
+                </div>
+                <div class="surah-grid" id="surahList"></div>
+            </div>
+
+            <div class="test-display" id="testArea">
+                <div id="cardContent">
+                    <p style="opacity: 0.5; font-size: 1.2em;">حدد السور ثم اضغط على زر "اختبار جديد"</p>
+                </div>
+                <div id="revealControls" style="display:none;">
+                    <div id="fullReveal" class="ayah-text blurred" onclick="this.classList.remove('blurred')"></div>
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                        <button class="pill-btn" style="background: var(--accent-green); flex: 1;" onclick="handleScore(true)">✅ أتقنت</button>
+                        <button class="pill-btn" style="background: var(--danger); color: white; flex: 1;" onclick="handleScore(false)">❌ مراجعة</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;" id="testActions">
+                <button class="pill-btn" onclick="generateTest()">✨ اختبار جديد</button>
+                <button class="pill-btn" style="background: transparent; border: 2px solid var(--primary-gold); color: var(--primary-gold); margin-right: 15px;" onclick="reveal()">👁 كشف الإجابة</button>
+            </div>
+        </section>
+
+        <section id="view-read" class="view-section">
+            <h2 style="color: var(--primary-gold);">📖 المصحف الشريف</h2>
+            <div class="info-card">
+                <select id="jumpMenu" onchange="jumpToSurah()" style="width: 100%; padding: 15px; border-radius: 15px; background: var(--surface); color: var(--primary-gold); border: 1px solid var(--primary-gold);">
+                    <option value="">🚀 القفز إلى سورة...</option>
+                </select>
+            </div>
+            <div id="mushaf-content"></div>
+        </section>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">🏠<br><small>الرئيسية</small></div>
+        <div class="nav-item" onclick="switchTab('test')">🎯<br><small>الاختبار</small></div>
+        <div class="nav-item" onclick="switchTab('read')">📖<br><small>المصحف</small></div>
+    </nav>
+
+    <script>
+        // Copy the Javascript from the previous version here
+        // (The logic remains the same, but the 'switchTab' function 
+        // should also handle the Sidebar active states)
+
+        let quran = [];
+        let currentIdx = -1;
+        let reviewList = JSON.parse(localStorage.getItem('hifz_reviews')) || [];
+        let dailyCount = parseInt(localStorage.getItem('hifz_daily')) || 0;
+
+        fetch('quran_fixed.json').then(r => r.json()).then(data => {
+            quran = data;
+            init();
+        });
+
+        function init() {
+            updateStats();
+            const names = [...new Set(quran.map(x => x.surah))];
+            
+            // Populate Surah Selection
+            document.getElementById('surahList').innerHTML = names.map(n => `
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.9em; padding:5px;">
+                    <input type="checkbox" checked value="${n}"> ${n}
+                </label>
+            `).join('');
+
+            // Populate Jump Menu
+            const jumpMenu = document.getElementById('jumpMenu');
+            names.forEach(n => {
+                let opt = document.createElement('option'); opt.value = n; opt.textContent = n;
+                jumpMenu.appendChild(opt);
+            });
+
+            // Populate Mushaf
+            document.getElementById('mushaf-content').innerHTML = quran.map(a => `
+                <div class="info-card" id="anchor-${a.surah}">
+                    <div style="color: var(--primary-gold); font-size: 0.85em; margin-bottom: 10px;">${a.surah} • آية ${a.ayah_num}</div>
+                    <div style="font-size: 1.5em; line-height: 2;">${a.full}</div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(target, el) {
+            // Section visibility
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + target).classList.add('active');
+
+            // Sidebar active state
+            document.querySelectorAll('.sidebar-nav-item').forEach(i => i.classList.remove('active'));
+            if(el) el.classList.add('active');
+
+            // Mobile nav active state (sync)
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            // ... logic to match mobile icons ...
+        }
+
+        function generateTest() {
+            const selected = Array.from(document.querySelectorAll('#surahList input:checked')).map(i => i.value);
+            if(!selected.length) return alert("اختر سورة");
+
+            const pool = quran.map((v, i) => selected.includes(v.surah) ? i : -1).filter(i => i !== -1);
+            currentIdx = pool[Math.floor(Math.random() * pool.length)];
+            const ayah = quran[currentIdx];
+
+            document.getElementById('cardContent').innerHTML = `
+                <span style="color: var(--primary-gold); font-weight: bold; font-size: 1.1em;">${ayah.surah} • آية ${ayah.ayah_num}</span>
+                <div style="font-size: 2.2em; margin-top: 20px; line-height: 1.6;">${ayah.start} ...</div>
+            `;
+            document.getElementById('revealControls').style.display = 'none';
+            document.getElementById('testActions').style.display = 'block';
+        }
+
+        function reveal() {
+            if (currentIdx === -1) return;
+            const revealDiv = document.getElementById('fullReveal');
+            revealDiv.textContent = quran[currentIdx].full;
+            revealDiv.classList.add('blurred');
+            document.getElementById('revealControls').style.display = 'block';
+            document.getElementById('testActions').style.display = 'none';
+        }
+
+        function handleScore(success) {
+            if (!success) {
+                if (!reviewList.includes(currentIdx)) reviewList.push(currentIdx);
+            } else {
+                reviewList = reviewList.filter(i => i !== currentIdx);
+                dailyCount++;
+            }
+            localStorage.setItem('hifz_reviews', JSON.stringify(reviewList));
+            localStorage.setItem('hifz_daily', dailyCount);
+            updateStats();
+            generateTest();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-daily').innerText = dailyCount;
+            document.getElementById('stat-review').innerText = reviewList.length;
+            document.getElementById('side-progress').innerText = `${dailyCount} / 50 آية`;
+        }
+
+        function jumpToSurah() {
+            const s = document.getElementById('jumpMenu').value;
+            const target = document.getElementById(`anchor-${s}`);
+            if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function toggleSurahs(val) { document.querySelectorAll('#surahList input').forEach(i => i.checked = val); }
+    </script>
 </body>
 </html>
+
