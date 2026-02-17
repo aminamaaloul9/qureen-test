@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Qur'an Hifz Mobile</title>
+    <title>Qur'an Hifz Master</title>
     <style>
         :root {
             --primary: #00ffa3;
@@ -14,126 +14,144 @@
         }
 
         body {
-            margin: 0; padding: 0;
-            background-color: var(--bg);
-            color: var(--text);
+            margin: 0; padding: 0; background: var(--bg); color: var(--text);
             font-family: 'Segoe UI', system-ui, sans-serif;
-            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Stats Header */
-        .stats-bar {
-            width: 100%; background: var(--surface);
-            display: flex; justify-content: space-around;
-            padding: 15px 0; border-bottom: 1px solid #243531;
-            position: sticky; top: 0; z-index: 100;
+        /* Tab Navigation */
+        .tabs {
+            display: flex; background: var(--surface); position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid #243531;
         }
-        .stat-item { text-align: center; }
-        .stat-val { display: block; font-weight: bold; color: var(--primary); font-size: 1.2em; }
-        .stat-lbl { font-size: 0.7em; opacity: 0.7; }
+        .tab {
+            flex: 1; padding: 15px; text-align: center; cursor: pointer;
+            font-weight: bold; opacity: 0.6; transition: 0.3s;
+        }
+        .tab.active { opacity: 1; color: var(--primary); border-bottom: 3px solid var(--primary); }
 
-        .container { width: 92%; max-width: 500px; padding-bottom: 40px; }
+        .container { width: 92%; max-width: 600px; margin: auto; padding: 20px 0 100px; }
 
-        h2 { text-align: center; color: var(--primary); margin: 20px 0 10px; font-size: 1.4em; }
-
-        /* Modern Settings Card */
+        /* Settings Card */
         .card-settings {
-            background: var(--surface); border-radius: 20px;
-            padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .search-box {
-            width: 100%; box-sizing: border-box; padding: 12px;
-            border-radius: 12px; border: 1px solid #2d3d39;
-            background: #0b1311; color: white; margin-bottom: 10px;
+            background: var(--surface); border-radius: 20px; padding: 15px; margin-bottom: 20px;
         }
         .surah-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-            max-height: 160px; overflow-y: auto; padding: 5px;
+            max-height: 150px; overflow-y: auto; margin: 10px 0;
         }
         .surah-item {
-            background: #1d2b27; padding: 10px; border-radius: 10px;
-            display: flex; align-items: center; font-size: 0.85em;
+            background: #1d2b27; padding: 8px; border-radius: 8px;
+            display: flex; align-items: center; font-size: 0.8em;
         }
 
-        /* Main Test Card */
+        /* Mushaf Mode */
+        #mushaf-view { display: none; background: var(--surface); border-radius: 20px; padding: 20px; }
+        .mushaf-ayah { margin-bottom: 20px; border-bottom: 1px solid #243531; padding-bottom: 10px; }
+        .mushaf-meta { color: var(--primary); font-size: 0.8em; }
+        .mushaf-text { font-size: 1.4em; line-height: 1.8; margin-top: 5px; }
+
+        /* Test Card */
         .test-card {
-            background: var(--surface); border-radius: 24px;
-            padding: 25px; min-height: 220px; position: relative;
+            background: var(--surface); border-radius: 24px; padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #243531;
         }
-        .ayah-meta { font-size: 0.9em; color: var(--primary); margin-bottom: 10px; display: block;}
-        .ayah-text { font-size: 1.6em; line-height: 1.7; margin-bottom: 15px; }
-        .answer-text { 
-            color: #b0b8b6; font-size: 1.4em; border-top: 1px solid #243531;
-            padding-top: 15px; margin-top: 15px; animation: slideUp 0.4s ease;
+        .ayah-text { font-size: 1.6em; line-height: 1.7; margin: 15px 0; }
+        .context-box { 
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;
+            font-size: 0.9em; margin: 5px 0; color: #aaa;
         }
 
-        /* Mobile Action Buttons */
-        .action-bar {
-            display: flex; flex-direction: column; gap: 12px; margin-top: 20px;
-        }
+        /* Buttons */
         .btn {
-            padding: 16px; border-radius: 16px; border: none;
-            font-weight: bold; font-size: 1.1em; cursor: pointer;
-            transition: 0.2s; width: 100%;
+            padding: 14px; border-radius: 14px; border: none; font-weight: bold;
+            cursor: pointer; width: 100%; margin-top: 10px;
         }
         .btn-primary { background: var(--primary); color: #000; }
-        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
-        .btn-score { background: #2d3d39; color: white; flex: 1; font-size: 0.9em; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-small { padding: 5px 10px; font-size: 0.7em; margin-right: 5px; }
 
-        .score-group { display: flex; gap: 10px; margin-top: 10px; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .action-group { margin-top: 20px; }
+        .search-box {
+            width: 100%; padding: 10px; border-radius: 10px; border: none;
+            background: #0b1311; color: white; box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
-<div class="stats-bar">
-    <div class="stat-item"><span class="stat-val" id="count-total">0</span><span class="stat-lbl">الإجمالي</span></div>
-    <div class="stat-item"><span class="stat-val" style="color:#00ffa3" id="count-right">0</span><span class="stat-lbl">صح</span></div>
-    <div class="stat-item"><span class="stat-val" style="color:#ff4d4d" id="count-wrong">0</span><span class="stat-lbl">مراجعة</span></div>
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('test')">🎯 إختبار الحفظ</div>
+    <div class="tab" onclick="switchTab('read')">📖 المصحف</div>
 </div>
 
 <div class="container">
-    <h2>📖 رفيق الحفظ</h2>
-
-    <div class="card-settings">
-        <input type="text" class="search-box" id="search" placeholder="🔍 بحث عن سورة..." oninput="filterSurahs()">
-        <div class="surah-grid" id="surahList"></div>
-    </div>
-
-    <div class="test-card" id="testCard">
-        <div id="cardContent">
-            <div style="text-align:center; padding-top:40px; opacity:0.5;">اختر السور ثم اضغط "اختبار جديد"</div>
-        </div>
-    </div>
-
-    <div class="action-bar">
-        <button class="btn btn-primary" onclick="newTest()">🎯 اختبار جديد</button>
-        <button class="btn btn-outline" onclick="reveal()">👁 كشف الآية كاملة</button>
-        
-        <div id="postReveal" style="display:none;">
-            <div class="score-group">
-                <button class="btn btn-score" onclick="updateScore(true)" style="border-bottom: 4px solid #00ffa3;">✅ أحفظها</button>
-                <button class="btn btn-score" onclick="updateScore(false)" style="border-bottom: 4px solid #ff4d4d;">❌ تحتاج مراجعة</button>
+    <div id="test-view">
+        <div class="card-settings">
+            <input type="text" class="search-box" id="search" placeholder="🔍 بحث عن سورة..." oninput="filterSurahs()">
+            <div class="surah-grid" id="surahList"></div>
+            <div>
+                <button class="btn btn-outline btn-small" onclick="toggleSurahs(true)">تحديد الكل</button>
+                <button class="btn btn-outline btn-small" onclick="toggleSurahs(false)">إلغاء الكل</button>
             </div>
-            <button class="btn btn-outline" style="margin-top:10px; border-color:var(--accent); color:var(--accent)" onclick="playAudio()">🔊 سماع التلاوة</button>
         </div>
+
+        <div class="test-card" id="testCard">
+            <div id="cardContent" style="text-align:center; opacity:0.5;">ابدأ الاختبار الآن</div>
+        </div>
+
+        <div class="action-group">
+            <button class="btn btn-primary" onclick="generateTest()">🎯 اختبار جديد</button>
+            <button class="btn btn-outline" onclick="reveal()">👁 كشف الآية</button>
+            
+            <div id="revealControls" style="display:none; margin-top:15px;">
+                <div id="prevAyah" class="context-box"></div>
+                <div id="nextAyah" class="context-box"></div>
+                <button class="btn btn-outline" style="color:var(--accent); border-color:var(--accent)" onclick="playAudio()">🔊 استماع بصوت العفاسي</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mushaf-view">
+        <h3 style="color:var(--primary)">القراءة والمراجعة</h3>
+        <div id="mushaf-content"></div>
     </div>
 </div>
 
 <script>
     let quran = [];
-    let current = null;
-    let stats = { total: 0, right: 0, wrong: 0 };
+    let currentIdx = -1;
 
-    fetch('fullquran_fixed.json').then(r => r.json()).then(data => {
+    fetch('quran_fixed.json').then(r => r.json()).then(data => {
         quran = data;
-        const names = [...new Set(data.map(x => x.surah))];
+        loadApp();
+    });
+
+    function loadApp() {
+        // Build Surah selection list
+        const names = [...new Set(quran.map(x => x.surah))];
         document.getElementById('surahList').innerHTML = names.map(n => `
             <label class="surah-item"><input type="checkbox" checked value="${n}"> <span>${n}</span></label>
         `).join('');
-    });
+
+        // Build Mushaf Content
+        document.getElementById('mushaf-content').innerHTML = quran.map((a, i) => `
+            <div class="mushaf-ayah">
+                <div class="mushaf-meta">${a.surah} | آية ${a.ayah_num}</div>
+                <div class="mushaf-text">${a.full}</div>
+            </div>
+        `).join('');
+    }
+
+    function switchTab(mode) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('test-view').style.display = (mode === 'test') ? 'block' : 'none';
+        document.getElementById('mushaf-view').style.display = (mode === 'read') ? 'block' : 'none';
+    }
+
+    function toggleSurahs(val) {
+        document.querySelectorAll('#surahList input').forEach(i => i.checked = val);
+    }
 
     function filterSurahs() {
         const q = document.getElementById('search').value;
@@ -142,41 +160,37 @@
         });
     }
 
-    function newTest() {
+    function generateTest() {
         const selected = Array.from(document.querySelectorAll('#surahList input:checked')).map(i => i.value);
         if(!selected.length) return alert("اختر سورة");
 
-        const pool = quran.filter(x => selected.includes(x.surah));
-        current = pool[Math.floor(Math.random() * pool.length)];
-        
+        const pool = quran.map((v, i) => selected.includes(v.surah) ? i : -1).filter(i => i !== -1);
+        currentIdx = pool[Math.floor(Math.random() * pool.length)];
+        const ayah = quran[currentIdx];
+
         document.getElementById('cardContent').innerHTML = `
-            <span class="ayah-meta">سورة ${current.surah} • آية ${current.ayah_num}</span>
-            <div class="ayah-text">${current.start} ...</div>
-            <div id="answer"></div>
+            <div style="color:var(--primary); font-size:0.9em;">سورة ${ayah.surah} • آية ${ayah.ayah_num}</div>
+            <div class="ayah-text">${ayah.start} ...</div>
+            <div id="fullReveal" style="display:none; border-top:1px solid #243531; padding-top:10px;">${ayah.full}</div>
         `;
-        document.getElementById('postReveal').style.display = 'none';
+        document.getElementById('revealControls').style.display = 'none';
     }
 
     function reveal() {
-        if(!current) return;
-        document.getElementById('answer').innerHTML = `<div class="answer-text">${current.full}</div>`;
-        document.getElementById('postReveal').style.display = 'block';
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
+        if(currentIdx === -1) return;
+        document.getElementById('fullReveal').style.display = 'block';
+        document.getElementById('revealControls').style.display = 'block';
 
-    function updateScore(isRight) {
-        stats.total++;
-        if(isRight) stats.right++; else stats.wrong++;
-        document.getElementById('count-total').innerText = stats.total;
-        document.getElementById('count-right').innerText = stats.right;
-        document.getElementById('count-wrong').innerText = stats.wrong;
-        newTest(); // Auto-start next test
+        // Context Logic
+        const prev = quran[currentIdx - 1];
+        const next = quran[currentIdx + 1];
+        
+        document.getElementById('prevAyah').innerHTML = prev ? `<b>السابقة:</b> ${prev.full}` : "بداية الملف";
+        document.getElementById('nextAyah').innerHTML = next ? `<b>التالية:</b> ${next.full}` : "نهاية الملف";
     }
 
     function playAudio() {
-        // Logic assumes your JSON is in order (Fatiha to Nas)
-        const globalId = quran.indexOf(current) + 1;
-        const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${globalId}.mp3`);
+        const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${currentIdx + 1}.mp3`);
         audio.play();
     }
 </script>
