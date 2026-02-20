@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Qur'an Hifz: Premium Edition</title>
+    <title>Qur'an Hifz: Supreme Edition</title>
     <style>
         :root {
-            /* Color Palette - Dark Mode */
             --primary-gold: #FFD700;
             --primary-dark: #0b0d0e;
             --main-bg: linear-gradient(to bottom, #0b0d0e 0%, #1a1c1e 100%);
@@ -22,8 +21,7 @@
         }
 
         body.light-mode {
-            /* Color Palette - Light Mode */
-            --primary-gold: #B8860B; /* Richer Gold */
+            --primary-gold: #B8860B; 
             --primary-dark: #F0F2F5;
             --main-bg: linear-gradient(to bottom, #f0f2f5 0%, #ffffff 100%);
             --surface: #FFFFFF;
@@ -37,65 +35,63 @@
         * { box-sizing: border-box; }
 
         body {
-            margin: 0; padding: 0; 
-            background: var(--main-bg);
-            color: var(--text-main); 
-            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+            margin: 0; padding: 0; background: var(--main-bg);
+            color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
             display: flex; flex-direction: row; min-height: 100vh;
-            transition: all 0.3s ease;
+            transition: background 0.4s ease, color 0.4s ease;
         }
 
-        h1, h2, h3 { font-weight: 700; }
-        body.light-mode h1, body.light-mode h2, body.light-mode h3 { font-weight: 600; }
+        .info-card, .context-card, .pill-btn, .sidebar, .search-box {
+            transition: background 0.3s ease, color 0.3s ease, border 0.3s ease, transform 0.2s ease;
+        }
 
-        /* SIDEBAR */
+        #testArea {
+            background: linear-gradient(145deg, var(--card-bg) 0%, var(--card-bg-alt) 100%);
+        }
+
+        .surah-grid::-webkit-scrollbar { width: 8px; }
+        .surah-grid::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 4px; }
+        .surah-grid::-webkit-scrollbar-track { background: var(--card-bg-alt); }
+
         .sidebar {
             width: var(--sidebar-width); background: var(--surface);
             border-left: 1px solid rgba(128,128,128,0.1);
             display: flex; flex-direction: column; padding: 25px;
-            position: sticky; top: 0; height: 100vh;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; height: 100vh; z-index: 1000;
         }
         .sidebar-logo { color: var(--primary-gold); font-size: 1.6rem; font-weight: bold; margin-bottom: 40px; text-align: center; }
         .sidebar-nav-item {
             padding: 14px 18px; border-radius: 12px; margin-bottom: 8px;
-            cursor: pointer; transition: 0.2s; color: var(--text-dim);
-            display: flex; align-items: center; gap: 12px;
+            cursor: pointer; color: var(--text-dim); display: flex; align-items: center; gap: 12px;
         }
-        .sidebar-nav-item:hover { background: rgba(128,128,128,0.05); color: var(--text-main); }
+        .sidebar-nav-item:hover { background: rgba(128,128,128,0.08); color: var(--text-main); }
         .sidebar-nav-item.active { background: var(--primary-gold); color: #000; font-weight: bold; }
 
-        /* MAIN */
         .main-content { flex: 1; padding: 40px; max-width: 1000px; margin: 0 auto; }
 
         .info-card {
             background: var(--card-bg); border-radius: 24px; padding: 25px;
             margin-bottom: 30px; border: 1px solid rgba(128,128,128,0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
         }
 
         .search-box {
             width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(128,128,128,0.2);
-            background: var(--card-bg-alt); color: var(--text-main); margin-bottom: 15px; font-size: 1rem;
+            background: var(--card-bg-alt); color: var(--text-main); margin-bottom: 15px;
         }
 
         .surah-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 10px; max-height: 250px; overflow-y: auto; padding: 15px;
             background: var(--card-bg-alt); border-radius: 15px;
-            scroll-snap-type: y proximity;
         }
 
-        /* BUTTONS */
         .pill-btn {
             background: var(--primary-gold); color: #000; border: none;
             padding: 12px 24px; border-radius: 50px; font-weight: bold; cursor: pointer;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            transition: all 0.2s ease;
         }
         .pill-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
         .pill-btn:active { transform: scale(0.96); }
-        .pill-btn:disabled { background: #888; cursor: not-allowed; }
 
         .context-card {
             background: var(--card-bg-alt); padding: 18px; border-radius: 18px;
@@ -103,20 +99,24 @@
         }
 
         .streak-badge {
-            background: var(--streak-gradient);
-            color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: var(--streak-gradient); color: white; padding: 6px 16px; 
+            border-radius: 20px; font-size: 0.9rem; font-weight: bold;
         }
 
-        .view-section { display: none; animation: fadeIn 0.4s ease; }
+        .view-section { display: none; animation: fadeIn 0.4s ease forwards; }
         .view-section.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 850px) {
             body { flex-direction: column; }
             .sidebar { display: none; }
-            .main-content { padding: 20px 20px 100px; }
+            .main-content { padding: 20px 15px 100px; }
+        }
+
+        @media (max-width: 500px) {
+            .info-card, #fullReveal { font-size: 1.4rem; line-height: 1.6; padding: 20px; }
+            .pill-btn { padding: 10px 18px; font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -137,12 +137,11 @@
             <h1>أهلاً بك</h1>
             <div class="info-card" style="background: var(--primary-gold); color: #000; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h3 style="margin:0; font-size: 1.4rem;">تحفيز اليوم 🚀</h3>
+                    <h3 style="margin:0;">تحفيز اليوم 🚀</h3>
                     <p id="streak-text" style="margin: 5px 0 0 0; opacity: 0.9;">أنت في بداية الطريق!</p>
                 </div>
                 <div class="streak-badge" id="streak-val">0 يوم</div>
             </div>
-            
             <div class="info-card">
                 <h3>إحصائيات الجلسة 📊</h3>
                 <p style="color: var(--text-dim);">عدد السور المحددة للاختبار حالياً: <span id="selected-count" style="color: var(--primary-gold); font-weight: bold;">0</span></p>
@@ -162,25 +161,18 @@
             </div>
             
             <div class="info-card" id="testArea" style="text-align:center; min-height: 320px;">
-                <div id="cardContent"><p style="opacity:0.5;">يرجى اختيار السور من القائمة أعلاه لبدء التسميع.</p></div>
+                <div id="cardContent"><p style="opacity:0.5;">يرجى اختيار السور لبدء الاختبار.</p></div>
                 
-                <div id="voice-area" style="margin-top: 25px; display:none;">
-                    <button id="micBtn" class="pill-btn" style="background: var(--accent-green); color: #000;" onclick="startListening()">🎤 ابدأ التسميع</button>
-                    <p id="user-speech" style="color: var(--text-dim); margin-top: 18px; font-style: italic; font-size: 1.1rem;"></p>
-                </div>
-
                 <div id="revealControls" style="display:none; margin-top:25px;">
-                    <div id="fullReveal" style="font-size:1.9rem; line-height:1.9; margin-bottom:25px; color:var(--text-main);"></div>
+                    <div id="fullReveal" style="font-size:1.8rem; line-height:1.8; margin-bottom:25px; color:var(--text-main);"></div>
                     <button id="audioBtn" class="pill-btn" style="background:transparent; border:2px solid var(--primary-gold); color:var(--primary-gold);" onclick="playAudio()">🔊 تلاوة الآية</button>
-                    
                     <div class="context-area" style="margin-top: 25px;">
                         <div id="prevAyahBox" class="context-card"></div>
                         <div id="nextAyahBox" class="context-card"></div>
                     </div>
-
                     <div style="display:flex; gap:15px; margin-top:30px;">
-                        <button class="pill-btn" style="background:var(--accent-green); flex:1" onclick="handleResult(true)">✅ أتقنت</button>
-                        <button class="pill-btn" style="background:var(--danger); color:white; flex:1" onclick="handleResult(false)">❌ مراجعة</button>
+                        <button class="pill-btn" style="background:var(--accent-green); flex:1" onclick="generateTest()">✅ أتقنت</button>
+                        <button class="pill-btn" style="background:var(--danger); color:white; flex:1" onclick="generateTest()">❌ مراجعة</button>
                     </div>
                 </div>
             </div>
@@ -203,24 +195,6 @@
         let quran = [];
         let currentIdx = -1;
         let currentAudio = null;
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition = null;
-
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA';
-            recognition.interimResults = false;
-            recognition.onresult = (e) => {
-                document.getElementById('user-speech').innerText = "قلت: " + e.results[0][0].transcript;
-                reveal();
-            };
-            recognition.onend = () => {
-                const btn = document.getElementById('micBtn');
-                btn.innerText = "🎤 ابدأ التسميع";
-                btn.style.background = "var(--accent-green)";
-            };
-        }
 
         fetch('fullquran_fixed.json')
             .then(r => r.json())
@@ -259,7 +233,7 @@
         function generateTest() {
             if(currentAudio) currentAudio.pause();
             const selected = Array.from(document.querySelectorAll('#surahList input:checked')).map(i => i.value);
-            if(!selected.length) return alert("يرجى اختيار سورة واحدة على الأقل للاختبار");
+            if(!selected.length) return alert("يرجى اختيار سورة واحدة على الأقل");
 
             const pool = quran.map((v, i) => selected.includes(v.surah) ? i : -1).filter(i => i !== -1);
             currentIdx = pool[Math.floor(Math.random() * pool.length)];
@@ -267,20 +241,10 @@
 
             document.getElementById('cardContent').innerHTML = `
                 <div style="color:var(--primary-gold); font-weight:bold; font-size: 1.1rem;">${ayah.surah} • آية ${ayah.ayah_num}</div>
-                <div style="font-size:2.2rem; margin-top:25px; line-height: 1.6;">${ayah.start} ...</div>
+                <div style="font-size:2rem; margin-top:25px; line-height: 1.6;">${ayah.start} ...</div>
             `;
-            document.getElementById('voice-area').style.display = 'block';
-            document.getElementById('user-speech').innerText = "";
             document.getElementById('revealControls').style.display = 'none';
             document.getElementById('testActions').style.display = 'block';
-        }
-
-        function startListening() {
-            if (!recognition) return alert("المتصفح لا يدعم ميزة التسميع الصوتي");
-            recognition.start();
-            const btn = document.getElementById('micBtn');
-            btn.innerText = "🛑 جاري الاستماع...";
-            btn.style.background = "var(--danger)";
         }
 
         function reveal() {
@@ -295,10 +259,6 @@
             
             document.getElementById('revealControls').style.display = 'block';
             document.getElementById('testActions').style.display = 'none';
-        }
-
-        function handleResult(isCorrect) {
-            generateTest();
         }
 
         function playAudio() {
@@ -352,11 +312,8 @@
             if (lastDate !== today) {
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
-                if (lastDate === yesterday.toDateString()) {
-                    streak++;
-                } else {
-                    streak = 1;
-                }
+                if (lastDate === yesterday.toDateString()) streak++;
+                else streak = 1;
                 localStorage.setItem('hifz_streak', streak);
                 localStorage.setItem('hifz_last_date', today);
             }
